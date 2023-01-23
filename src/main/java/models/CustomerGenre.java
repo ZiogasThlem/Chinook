@@ -1,4 +1,6 @@
 package models;
 
-public record CustomerGenre() {
+public record CustomerGenre(int id,
+                            String name,
+                            String genre) {
 }
