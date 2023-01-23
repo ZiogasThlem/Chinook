@@ -156,7 +156,27 @@ public class CustomerImpl implements CustomerRepository{
     @Override
     public CustomerCountry countryWithMostCustomers() {
 
-        return null;
+        String sql = """
+                SELECT country
+                FROM customer
+                GROUP BY country
+                ORDER BY count(country) DESC
+                LIMIT 1;""";
+
+        CustomerCountry country = null;
+        try (Connection conn = DriverManager.getConnection(url, username, password)) {
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            ResultSet result = statement.executeQuery();
+
+            country = new CustomerCountry(result.getString("country"));
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return country;
+
     }
 
     @Override
