@@ -48,13 +48,13 @@ public class CustomerImpl implements CustomerRepository{
             statement.setInt(1,integer); //replacing the question mark with the integer
             ResultSet result = statement.executeQuery(); //making a result set and executing the query
             customer = new Customer( //making a new customer
-                    result.getInt("customer_id"),   //adding the customers' id from databases "customer_id" field
+                    result.getInt("customer_id"), //adding the customers' id from databases "customer_id" field
                     result.getString("first_name"), //adding the customers' name from databases "first_name" field
-                    result.getString("last_name"),  //adding the customers' surname from databases "last_name" field
-                    result.getString("country"),    //adding the customers' country from databases "country" field
-                    result.getInt("postal_code"),   //adding the customers' postal code from databases "postal_code" field
-                    result.getInt("phone"),         //adding the customers' phone from databases "phone" field
-                    result.getString("email")      //adding the customers' email from databases "email" field
+                    result.getString("last_name"), //adding the customers' surname from databases "last_name" field
+                    result.getString("country"), //adding the customers' country from databases "country" field
+                    result.getInt("postal_code"), //adding the customers' postal code from databases "postal_code" field
+                    result.getInt("phone"),  //adding the customers' phone from databases "phone" field
+                    result.getString("email") //adding the customers' email from databases "email" field
             );
         } catch (SQLException e) {
             System.out.println(e.getMessage()); //prints the exceptions' message
@@ -85,13 +85,13 @@ public class CustomerImpl implements CustomerRepository{
                         result.getString("country"), //adding the customers' country from databases "country" field
                         result.getInt("postal_code"), //adding the customers' postal code from databases "postal_code" field
                         result.getInt("phone"), //adding the customers' phone from databases "phone" field
-                        result.getString("email"));//adding the customers' email from databases "email" field
-                customers.add(customer);
+                        result.getString("email")); //adding the customers' email from databases "email" field
+                customers.add(customer); //adding customer to the list
             }
         }catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage()); //prints the exceptions' message
         }
-        return customers;
+        return customers; //returns the customers list
     }
 
         @Override
@@ -101,8 +101,31 @@ public class CustomerImpl implements CustomerRepository{
 
     @Override
     public int update(Customer object) {
-
-        return 0;
+        //passing the sql query into a string value
+        String sql = "UPDATE customer SET first_name=?, last_name=?, " +
+                "country=?, postal_code=?, phone=?, email=? WHERE customer_id=?";
+        int id = object.id(); //taking the id of the object
+        int result=0;
+        String name = object.firstName(); //taking the name of the object
+        String surname = object.lastName(); //taking the surname of the object
+        String country = object.country(); //taking the country of the object
+        int postalCode = object.postalCode(); //taking the postal Code of the object
+        int phone = object.phoneNumber(); //taking the phone of the object
+        String email = object.email(); //taking the email of the object
+        try(Connection conn = DriverManager.getConnection(url,username,password)) { //trying to make a connection with the database
+            PreparedStatement statement = conn.prepareStatement(sql); //creating a statement for the query
+            statement.setString(1,name); //replacing the first question mark with the name
+            statement.setString(2,surname); //replacing the second question mark with the surname
+            statement.setString(3,country); //replacing the third question mark with the country
+            statement.setInt(4,postalCode); //replacing the fourth question mark with the postal code
+            statement.setInt(5,phone); //replacing the fifth question mark with the phone
+            statement.setString(6,email); //replacing the sixth question mark with the email
+            statement.setInt(7,id); //replacing the seventh question mark with the id
+            result = statement.executeUpdate(); //making a result set and executing the query
+        } catch (SQLException e) {
+            System.out.println(e.getMessage()); //prints the exceptions' message
+        }
+        return result; //returns the result statement of the update query
     }
 
     @Override
