@@ -161,6 +161,39 @@ public class CustomerImpl implements CustomerRepository{
 
     @Override
     public CustomerGenre mostPopGenre() {
-        return null;
+        //passing the sql query into a string value
+        String sql = "SELECT gr_name, name, id FROM(SELECT name, id, gr_name, count(genre) " +
+                "FROM (SELECT customer.first_name as name, " +
+                " customer.customer_id as id, " +
+                " track.genre_id as genre, " +
+                " genre.name as gr_name " +
+                "FROM customer JOIN invoice ON customer.customer_id = invoice.customer_id " +
+                "JOIN invoice_line ON invoice.invoice_id = invoice_line.invoice_line_id " +
+                "JOIN track ON invoice_line.track_id = track.track_id " +
+                "JOIN genre ON track.genre_id = genre.genre_id)AS customers_genre " +
+                "WHERE id=? " +
+                "GROUP BY name, id, gr_name)AS something " +
+                "WHERE (count = (SELECT MAX(count) FROM(SELECT gr_name, count(genre) " +
+                "FROM (SELECT customer.first_name as name, customer.customer_id as id, " +
+                "track.genre_id as genre, genre.name as gr_name " +
+                "FROM customer JOIN invoice ON customer.customer_id = invoice.customer_id " +
+                "JOIN invoice_line ON invoice.invoice_id = invoice_line.invoice_line_id " +
+                "JOIN track tON invoice_line.track_id = track.track_id " +
+                "JOIN genre ON track.genre_id = genre.genre_id)AS customers_genre " +
+                "WHERE id=? " +
+                "GROUP BY gr_name)AS something))";
+        CustomerGenre customerGenre = null;  //creating a new customerGenre reference
+        try(Connection conn = DriverManager.getConnection(url,username,password)){
+            PreparedStatement statement = conn.prepareStatement(sql);   //creating a statement for the query
+            ResultSet result = statement.executeQuery();  //making a result set and executing the query
+            customerGenre = new CustomerGenre( //making a new customerGenre
+                    result.getInt("id"), //adding the customerGenres' id from databases "id" field
+                    result.getString("name"), //adding the customerGenres' name from databases "name" field
+                    result.getString("gr_name") //adding the customerGenres' genre name from databases "gr_name" field
+            );
+        }catch (SQLException e) {
+            System.out.println(e.getMessage());  //prints exceptions' message
+        }
+        return customerGenre; //returns the customerGenre
     }
 }
