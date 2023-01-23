@@ -1,4 +1,5 @@
-import org.springframework.beans.factory.annotation.Autowired;
+package runner;
+
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
@@ -10,7 +11,6 @@ public class PgAppRunner implements ApplicationRunner {
 
     private final CustomerImpl customer;
 
-    @Autowired
     public PgAppRunner(CustomerImpl customer) {
         this.customer = customer;
     }
