@@ -1,4 +1,6 @@
 package models;
 
-public record CustomerSpender() {
+public record CustomerSpender(int id,
+                              String name,
+                              double total) {
 }
