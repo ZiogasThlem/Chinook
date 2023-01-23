@@ -89,7 +89,7 @@ public class CustomerImpl implements CustomerRepository{
                 customers.add(customer); //adding customer to the list
             }
         }catch (SQLException e) {
-            System.out.println(e.getMessage()); //prints the exceptions' message
+            System.out.println(e.getMessage()); //prints exceptions' message
         }
         return customers; //returns the customers list
     }
@@ -121,9 +121,9 @@ public class CustomerImpl implements CustomerRepository{
             statement.setInt(5,phone); //replacing the fifth question mark with the phone
             statement.setString(6,email); //replacing the sixth question mark with the email
             statement.setInt(7,id); //replacing the seventh question mark with the id
-            result = statement.executeUpdate(); //making a result set and executing the query
+            result = statement.executeUpdate(); //passing value into result and executing the query for the update
         } catch (SQLException e) {
-            System.out.println(e.getMessage()); //prints the exceptions' message
+            System.out.println(e.getMessage()); //prints exceptions' message
         }
         return result; //returns the result statement of the update query
     }
@@ -135,13 +135,32 @@ public class CustomerImpl implements CustomerRepository{
 
     @Override
     public CustomerSpender highestSpender() {
-
-        return null;
+        //passing the sql query into a string value
+        String sql = "SELECT  name, id, total" +
+                "FROM (" +
+                "SELECT first_name as name, " +
+                "customer.customer_id as id," +
+                "total" +
+                "FROM customer" +
+                "JOIN invoice " +
+                "ON customer.customer_id = invoice.customer_id) AS spenders" +
+                "WHERE total = (SELECT MAX(total) FROM invoice)";
+        CustomerSpender customerSpender = null; //creating a new customerSpender reference
+        try(Connection conn = DriverManager.getConnection(url,username,password)){  //trying to make a connection with the database
+            PreparedStatement statement = conn.prepareStatement(sql);  //creating a statement for the query
+            ResultSet result = statement.executeQuery();  //making a result set and executing the query
+            customerSpender = new CustomerSpender( //making a new customerSpender
+                    result.getInt("name"), //adding the customerSpenders' name from databases "name" field
+                    result.getString("id"), //adding the customerSpenders' id from databases "id" field
+                    result.getDouble("total")); //adding the customerSpenders' total from databases "total" field
+        }catch (SQLException e) {
+            System.out.println(e.getMessage());  //prints exceptions' message
+        }
+        return customerSpender; //returns the customerSpender
     }
 
     @Override
     public CustomerGenre mostPopGenre() {
-
         return null;
     }
 }
