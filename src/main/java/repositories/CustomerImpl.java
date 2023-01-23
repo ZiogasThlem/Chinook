@@ -116,7 +116,36 @@ public class CustomerImpl implements CustomerRepository{
 
     @Override
     public int insert(Customer customer) {
-        return 0;
+
+        String sql = """
+                    INSERT INTO customer\s
+                    first_name,
+                    last_name,
+                    tcountry,
+                    postal_code,
+                    phone_number,
+                    email)
+                    VALUES (?,?,?,?,?,?)""";
+
+        int result = 0;
+
+        try(Connection conn = DriverManager.getConnection(url, username,password)) {
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1,customer.firstName());
+            statement.setString(2,customer.lastName());
+            statement.setString(3,customer.country());
+            statement.setInt(4, customer.postalCode());
+            statement.setInt(5, customer.phoneNumber());
+            statement.setString(6,customer.email());
+
+            result = statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+
+
     }
 
     @Override
