@@ -1,5 +1,8 @@
 package repositories;
 
+import models.CustomerGenre;
+import models.CustomerSpender;
+
 import java.util.List;
 
 public interface CRUDRepository <T, ID, N>{
@@ -9,7 +12,7 @@ public interface CRUDRepository <T, ID, N>{
 
     N readByName(N name);
 
-    T page(int limit, int offset); //4)
+    List<T> page(int limit, int offset); //4)
 
     int insert(T object);
 
@@ -17,7 +20,7 @@ public interface CRUDRepository <T, ID, N>{
 
     String countryWithMostCustomers();
 
-    T highestSpender();
+    CustomerSpender highestSpender();
 
-    String mostPopGenre();
+    CustomerGenre mostPopGenre();
 }
