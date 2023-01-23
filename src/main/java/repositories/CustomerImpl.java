@@ -79,7 +79,34 @@ public class CustomerImpl implements CustomerRepository{
     @Override
     public Customer readByName(String name) {
 
-        return null;
+        String sql = "SELECT * FROM customer WHERE firstName = LIKE %?%";
+        Customer customer = null;
+
+        try(Connection conn = DriverManager.getConnection(url, username,password)) {
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, name);
+
+            ResultSet result = statement.executeQuery();
+            while(result.next()){
+                customer = new Customer(
+
+                        result.getInt("id"),
+                        result.getString("firstName"),
+                        result.getString("lastName"),
+                        result.getString("country"),
+                        result.getInt("postalCode"),
+                        result.getInt("phoneNumber"),
+                        result.getString("email")
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return customer;
+
     }
 
     @Override
