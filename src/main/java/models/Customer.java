@@ -1,7 +1,7 @@
 package models;
 
 public record Customer(int id,
-                        String firstName,
+                       String firstName,
                        String lastName,
                        String country,
                        int postalCode,

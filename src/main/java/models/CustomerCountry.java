@@ -1,4 +1,4 @@
 package models;
 
-public record CustomerCountry() {
+public record CustomerCountry(String country) {
 }
