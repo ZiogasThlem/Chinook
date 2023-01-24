@@ -1,10 +1,10 @@
-package models;
+package com.example.chinook_manipulation.models;
 
 public record Customer(int id,
                        String firstName,
                        String lastName,
                        String country,
-                       int postalCode,
-                       int phoneNumber,
+                       String postalCode,
+                       String phoneNumber,
                        String email) {
 }
