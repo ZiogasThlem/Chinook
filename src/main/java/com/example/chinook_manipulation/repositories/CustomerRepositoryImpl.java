@@ -1,9 +1,9 @@
-package repositories;
+package com.example.chinook_manipulation.repositories;
 
-import models.Customer;
-import models.CustomerCountry;
-import models.CustomerGenre;
-import models.CustomerSpender;
+import com.example.chinook_manipulation.models.Customer;
+import com.example.chinook_manipulation.models.CustomerCountry;
+import com.example.chinook_manipulation.models.CustomerGenre;
+import com.example.chinook_manipulation.models.CustomerSpender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -13,73 +13,69 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class CustomerImpl implements CustomerRepository{
+public class CustomerRepositoryImpl implements CustomerRepository{
     private final String url;
     private final String username;
     private final String password;
 
     @Autowired
-    public CustomerImpl(@Value("${spring.datasource.url}") String url,
-                        @Value("${spring.datasource.username}") String username,
-                        @Value("${spring.datasource.password}") String password) {
+    public CustomerRepositoryImpl(@Value("${spring.datasource.url}") String url,
+                                  @Value("${spring.datasource.username}") String username,
+                                  @Value("${spring.datasource.password}") String password) {
+
         this.url = url;
         this.username = username;
         this.password = password;
     }
 
-    public void test() {
-        try(Connection conn = DriverManager.getConnection(url, username, password)) {
-            System.out.println("Connected to Postgres...");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public List<Customer> readAll() {
+
+        // Selecting the required fields from customer table
         String sql = "SELECT  " +
-                "id, " +
-                "firstName, " +
-                "lastName, " +
+                "customer_id, " +
+                "first_name, " +
+                "last_name, " +
                 "country, " +
-                "postalCode, " +
-                "phoneNumber, " +
+                "postal_code, " +
+                "phone_number, " +
                 "email " +
-                "FROM customer";
+                "FROM customer"; // passing the sql query into a string value
 
-        List<Customer> customers = new ArrayList<>();
-        try(Connection conn = DriverManager.getConnection(url, username,password)) {
+        List<Customer> customers = new ArrayList<>(); // creating an ArrayList that servers as a container for Customer objects
+        try(Connection conn = DriverManager.getConnection(url, username,password)) { //trying to make a connection with the database
+            PreparedStatement statement = conn.prepareStatement(sql); //creating a statement for the query
 
-            PreparedStatement statement = conn.prepareStatement(sql);
-
-            ResultSet result = statement.executeQuery();
-
-            while(result.next()) {
+            ResultSet result = statement.executeQuery(); //making a result set and executing the query
+            while(result.next()) { //for every customer in the database that returns the query
                 Customer customer = new Customer(
-                        result.getInt("id"),
-                        result.getString("firstName"),
-                        result.getString("lastName"),
-                        result.getString("country"),
-                        result.getInt("postalCode"),
-                        result.getInt("phoneNumber"),
-                        result.getString("email")
+                        result.getInt("customer_id"), //adding the customers' id from databases "customer_id" field
+                        result.getString("first_name"), //adding the customers' name from databases "first_name" field
+                        result.getString("last_name"), //adding the customers' surname from databases "last_name" field
+                        result.getString("country"), //adding the customers' country from databases "country" field
+                        result.getInt("postal_code"), //adding the customers' postal code from databases "postal_code" field
+                        result.getInt("phone_number"), //adding the customers' phone from databases "phone" field
+                        result.getString("email") //adding the customers' email from databases "email" field
                 );
-                customers.add(customer);
+                customers.add(customer); // adding each customer object to the customers ArrayList
             }
-        } catch (SQLException e) {
+        } catch (SQLException e) { //prints the exceptions' message
             e.printStackTrace();
         }
-        return customers;
+        return customers; //returns customers ArrayList
     }
 
     @Override
     public Customer readByID(Integer integer) {
+
         String sql = "SELECT * FROM customer WHERE customer_id = ?"; //passing the sql query into a string value
         Customer customer = null; //creating a new customer reference
+
         try(Connection conn = DriverManager.getConnection(url,username,password)){ //trying to make a connection with the database
             PreparedStatement statement = conn.prepareStatement(sql); //creating a statement for the query
             statement.setInt(1,integer); //replacing the question mark with the integer
             ResultSet result = statement.executeQuery(); //making a result set and executing the query
+
             customer = new Customer( //making a new customer
                     result.getInt("customer_id"), //adding the customers' id from databases "customer_id" field
                     result.getString("first_name"), //adding the customers' name from databases "first_name" field
@@ -98,43 +94,47 @@ public class CustomerImpl implements CustomerRepository{
     @Override
     public Customer readByName(String name) {
 
-        String sql = "SELECT * FROM customer WHERE firstName = LIKE %?%";
-        Customer customer = null;
+        // selecting every entry from customer which first name field includes String provided by "name" parameter
+        String sql = "SELECT * FROM customer WHERE first_name LIKE %?%";
 
-        try(Connection conn = DriverManager.getConnection(url, username,password)) {
+        Customer customer = null; //creating a new customer reference
+        try(Connection conn = DriverManager.getConnection(url, username,password)) { //trying to make a connection with the database
 
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1, name);
+            PreparedStatement statement = conn.prepareStatement(sql); //creating a statement for the query
+            statement.setString(1, name); //replacing the question mark with name parameter
+            ResultSet result = statement.executeQuery();  //making a result set and executing the query
+            while(result.next()){ //for every customer in the database that returns the query
 
-            ResultSet result = statement.executeQuery();
-            while(result.next()){
-                customer = new Customer(
+                customer = new Customer( //making a new customer
 
-                        result.getInt("id"),
-                        result.getString("firstName"),
-                        result.getString("lastName"),
-                        result.getString("country"),
-                        result.getInt("postalCode"),
-                        result.getInt("phoneNumber"),
-                        result.getString("email")
+                        result.getInt("customer_id"), //adding the customers' id from databases "customer_id" field
+                        result.getString("first_name"), //adding the customers' name from databases "first_name" field
+                        result.getString("last_name"), //adding the customers' surname from databases "last_name" field
+                        result.getString("country"), //adding the customers' country from databases "country" field
+                        result.getInt("postal_code"), //adding the customers' postal code from databases "postal_code" field
+                        result.getInt("phone"),  //adding the customers' phone from databases "phone" field
+                        result.getString("email") //adding the customers' email from databases "email" field
                 );
             }
-        } catch (SQLException e) {
+        } catch (SQLException e) { //prints the exceptions' message
             e.printStackTrace();
         }
-        return customer;
+        return customer; //returns the customer
     }
 
     @Override
     public List<Customer> page(int limit, int offset) {
+
         String sql = "SELECT first_name, last_name, phone, email FROM customer LIMIT ? OFFSET ?"; //passing the sql query into a string value
-        List<Customer> customers = null; //creating a new list of customers
-        Customer customer = null; //creating a new customer reference
+        List<Customer> customers = new ArrayList<>(); //creating a new list of customers
+        Customer customer; //creating a new customer reference
+
         try(Connection conn = DriverManager.getConnection(url,username,password)){ //trying to make a connection with the database
             PreparedStatement statement = conn.prepareStatement(sql); //creating a statement for the query
             statement.setInt(1,limit);  //replacing the first question mark with the limit
             statement.setInt(2,offset); //replacing the first question mark with the offset
             ResultSet result = statement.executeQuery(); //making a result set and executing the query
+
             while(result.next()){ //for every customer in the database that returns the query
                 customer = new Customer( //making a new customer
                         result.getInt("customer_id"), //adding the customers' id from databases "customer_id" field
@@ -144,6 +144,7 @@ public class CustomerImpl implements CustomerRepository{
                         result.getInt("postal_code"), //adding the customers' postal code from databases "postal_code" field
                         result.getInt("phone"), //adding the customers' phone from databases "phone" field
                         result.getString("email")); //adding the customers' email from databases "email" field
+
                 customers.add(customer); //adding customer to the list
             }
         }catch (SQLException e) {
@@ -155,6 +156,7 @@ public class CustomerImpl implements CustomerRepository{
     @Override
     public int insert(Customer customer) {
 
+        // passing all the required fields to insert a new customer entry to the query
         String sql = """
                     INSERT INTO customer\s
                     first_name,
@@ -165,24 +167,24 @@ public class CustomerImpl implements CustomerRepository{
                     email)
                     VALUES (?,?,?,?,?,?)""";
 
-        int result = 0;
+        int result = 0; // initialize result variable
 
-        try(Connection conn = DriverManager.getConnection(url, username,password)) {
+        try(Connection conn = DriverManager.getConnection(url, username,password)) { //trying to make a connection with the database
 
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1,customer.firstName());
-            statement.setString(2,customer.lastName());
-            statement.setString(3,customer.country());
-            statement.setInt(4, customer.postalCode());
-            statement.setInt(5, customer.phoneNumber());
-            statement.setString(6,customer.email());
+            PreparedStatement statement = conn.prepareStatement(sql); //creating a statement for the query
+            statement.setString(1,customer.first_name()); //setting first_name field for new customer entry
+            statement.setString(2,customer.last_name());//setting last_name field for new customer entry
+            statement.setString(3,customer.country());//setting country field for new customer entry
+            statement.setInt(4, customer.postal_code());//setting postal_code field for new customer entry
+            statement.setInt(5, customer.phone_number());//setting phone_number field for new customer entry
+            statement.setString(6,customer.email());//setting email field for new customer entry
 
-            result = statement.executeUpdate();
-        } catch (SQLException e) {
+            result = statement.executeUpdate(); // executing the sql statement and passing it to result variable
+
+        } catch (SQLException e) { //prints exceptions' message
             e.printStackTrace();
         }
-        return result;
-
+        return result; //returns the result statement of the update query
 
     }
 
@@ -193,11 +195,11 @@ public class CustomerImpl implements CustomerRepository{
                 "country=?, postal_code=?, phone=?, email=? WHERE customer_id=?";
         int id = object.id(); //taking the id of the object
         int result=0;
-        String name = object.firstName(); //taking the name of the object
-        String surname = object.lastName(); //taking the surname of the object
+        String name = object.first_name(); //taking the name of the object
+        String surname = object.last_name(); //taking the surname of the object
         String country = object.country(); //taking the country of the object
-        int postalCode = object.postalCode(); //taking the postal Code of the object
-        int phone = object.phoneNumber(); //taking the phone of the object
+        int postalCode = object.postal_code(); //taking the postal Code of the object
+        int phone = object.phone_number(); //taking the phone of the object
         String email = object.email(); //taking the email of the object
         try(Connection conn = DriverManager.getConnection(url,username,password)) { //trying to make a connection with the database
             PreparedStatement statement = conn.prepareStatement(sql); //creating a statement for the query
@@ -209,7 +211,7 @@ public class CustomerImpl implements CustomerRepository{
             statement.setString(6,email); //replacing the sixth question mark with the email
             statement.setInt(7,id); //replacing the seventh question mark with the id
             result = statement.executeUpdate(); //passing value into result and executing the query for the update
-        } catch (SQLException e) {
+        } catch (SQLException e) { //prints exceptions' message
             System.out.println(e.getMessage()); //prints exceptions' message
         }
         return result; //returns the result statement of the update query
@@ -218,6 +220,9 @@ public class CustomerImpl implements CustomerRepository{
     @Override
     public CustomerCountry countryWithMostCustomers() {
 
+        /* Selects a country from customer table, by descending order,
+        with a limit of 1, so it's the most common occurrence of "country"
+        in customer table, thus the country with the most customers. */
         String sql = """
                 SELECT country
                 FROM customer
@@ -225,34 +230,33 @@ public class CustomerImpl implements CustomerRepository{
                 ORDER BY count(country) DESC
                 LIMIT 1;""";
 
-        CustomerCountry country = null;
-        try (Connection conn = DriverManager.getConnection(url, username, password)) {
-
-            PreparedStatement statement = conn.prepareStatement(sql);
-            ResultSet result = statement.executeQuery();
-
-            country = new CustomerCountry(result.getString("country"));
-
-
-        } catch (SQLException e) {
+        CustomerCountry country = null; //creating a new CustomerCountry reference
+        try (Connection conn = DriverManager.getConnection(url, username, password)) { //trying to make a connection with the database
+            PreparedStatement statement = conn.prepareStatement(sql); //creating a statement for the query
+            ResultSet result = statement.executeQuery(); //making a result set and executing the query
+            while (result.next()) { //for every country in customer table in the database that returns the query
+                country = new CustomerCountry(result.getString("country"));
+            }
+        } catch (SQLException e) { //prints exceptions' message
             e.printStackTrace();
         }
-        return country;
 
+        return country;  // returning the required CustomerCountry object
     }
 
     @Override
     public CustomerSpender highestSpender() {
         //passing the sql query into a string value
-        String sql = "SELECT  name, id, total" +
-                "FROM (" +
-                "SELECT first_name as name, " +
-                "customer.customer_id as id," +
-                "total" +
-                "FROM customer" +
-                "JOIN invoice " +
-                "ON customer.customer_id = invoice.customer_id) AS spenders" +
-                "WHERE total = (SELECT MAX(total) FROM invoice)";
+        String sql= "SELECT  name, id, total" +
+                    "FROM (" +
+                    "SELECT first_name as name, " +
+                    "customer.customer_id as id," +
+                    "total" +
+                    "FROM customer" +
+                    "JOIN invoice " +
+                    "ON customer.customer_id = invoice.customer_id) AS spenders" +
+                    "WHERE total = (SELECT MAX(total) FROM invoice)";
+
         CustomerSpender customerSpender = null; //creating a new customerSpender reference
         try(Connection conn = DriverManager.getConnection(url,username,password)){  //trying to make a connection with the database
             PreparedStatement statement = conn.prepareStatement(sql);  //creating a statement for the query
@@ -304,4 +308,5 @@ public class CustomerImpl implements CustomerRepository{
         }
         return customerGenre; //returns the customerGenre
     }
+
 }

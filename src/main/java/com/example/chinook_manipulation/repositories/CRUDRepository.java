@@ -1,9 +1,9 @@
-package repositories;
+package com.example.chinook_manipulation.repositories;
 
-import models.Customer;
-import models.CustomerCountry;
-import models.CustomerGenre;
-import models.CustomerSpender;
+import com.example.chinook_manipulation.models.Customer;
+import com.example.chinook_manipulation.models.CustomerCountry;
+import com.example.chinook_manipulation.models.CustomerGenre;
+import com.example.chinook_manipulation.models.CustomerSpender;
 
 import java.util.List;
 

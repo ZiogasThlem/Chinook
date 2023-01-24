@@ -1,3 +1,9 @@
+-- Creating the table Superhero_power, that establishes
+-- the many to many connection between Superhero and
+-- Superpower (a Superhero can have many Superpower and
+-- the same Superpower can be shared between many Superheroes)
+-- and dropping it if it already exists.
+
 DROP TABLE IF EXISTS superhero_power;
 
 CREATE TABLE superhero_power(

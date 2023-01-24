@@ -1,4 +1,6 @@
-INSERT INTO Assistant (assistant_name, mentor_id) 
+-- Inserting sample Assistant entries to the Assistant table.
+
+INSERT INTO Assistant (assistant_name, mentor_id)
 VALUES ('Alfred Pennyworth', 2);
 
 INSERT INTO Assistant (assistant_name, mentor_id) 
