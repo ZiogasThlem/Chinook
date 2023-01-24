@@ -76,6 +76,7 @@ public class CustomerImpl implements CustomerRepository{
 
     @Override
     public Customer readByID(Integer integer) {
+        //this sql query returns all the fields from table customer, for the customer with a specific id
         String sql = "SELECT * FROM customer WHERE customer_id = ?"; //passing the sql query into a string value
         Customer customer = null; //creating a new customer reference
         try(Connection conn = DriverManager.getConnection(url,username,password)){ //trying to make a connection with the database
@@ -130,7 +131,16 @@ public class CustomerImpl implements CustomerRepository{
 
     @Override
     public List<Customer> page(int limit, int offset) {
-        String sql = "SELECT customer_id, country, postal_code, first_name, last_name, phone, email FROM customer LIMIT ? OFFSET ?"; //passing the sql query into a string value
+        /*This sql query returns the fields customer_id, country, postal_code, first_name,
+         *last_name, phone and email from table customer.
+         *with the limit parameter returns only the x customers,the number x is the limit.
+         *with the offset parameter skips the first y customers, the number y is the offset.*/
+        String sql = """
+                        SELECT customer_id, country, postal_code, 
+                                first_name, last_name, phone, email 
+                        FROM customer 
+                        LIMIT ? 
+                        OFFSET ?"""; //passing the sql query into a string value
         List<Customer> customers = new ArrayList<>(); //creating a new list of customers
         Customer customer = null; //creating a new customer reference
         try(Connection conn = DriverManager.getConnection(url,username,password)){ //trying to make a connection with the database
@@ -191,9 +201,14 @@ public class CustomerImpl implements CustomerRepository{
 
     @Override
     public int update(Customer object) {
-        //passing the sql query into a string value
-        String sql = "UPDATE customer SET first_name=?, last_name=?, " +
-                "country=?, postal_code=?, phone=?, email=? WHERE customer_id=?";
+        /*This sql query changes the fields customer_id, country, postal_code, first_name,
+         *last_name, phone and email of a record in table customer
+        * which has a specified id.*/
+        String sql = """
+                UPDATE customer 
+                SET first_name=?, last_name=?, country=?,
+                    postal_code=?, phone=?, email=? 
+                WHERE customer_id=?"""; //passing the sql query into a string value
         int id = object.id(); //taking the id of the object
         int result=0;
         String name = object.firstName(); //taking the name of the object
@@ -246,7 +261,10 @@ public class CustomerImpl implements CustomerRepository{
 
     @Override
     public CustomerSpender highestSpender() {
-        //passing the sql query into a string value
+        /* This sql query joins the tables customer and invoice to get the names, ids and total amount from
+        * the customers.
+        * At the second phase it takes the result of the previous select and takes the name, id and
+        * total amount of the customers with the maximum total in the database.*/
         String sql = """
                 SELECT  name, id, total
                 FROM ( 
@@ -255,7 +273,7 @@ public class CustomerImpl implements CustomerRepository{
                     FROM customer
                     JOIN invoice 
                     ON customer.customer_id = invoice.customer_id) AS spenders
-                WHERE total = (SELECT MAX(total) FROM invoice)""";
+                WHERE total = (SELECT MAX(total) FROM invoice)"""; //passing the sql query into a string value
         CustomerSpender customerSpender = null; //creating a new customerSpender reference
         try(Connection conn = DriverManager.getConnection(url,username,password)){  //trying to make a connection with the database
             PreparedStatement statement = conn.prepareStatement(sql);  //creating a statement for the query
@@ -274,16 +292,23 @@ public class CustomerImpl implements CustomerRepository{
 
     @Override
     public CustomerGenre mostPopGenre(int id) {
-        //passing the sql query into a string value
+        /* This sql query has a lot of phases.
+        * Phase 1) multiple join on the tables customer, invoice, invoice_line, track, genre
+        *           to get the name, id, genre name and genre id for every record.
+        * Phase 2) it takes the result of the previous multiple join and  returns the name, id,
+        * genre name and counter that shows how many times a specific genre exists at the records
+        * for a specific customer with the specific id.
+        * Phase 2) at this phase takes the previous result and selects the genre name, customer name
+        * and customer id who has the maximum counter of genre.  */
         String sql = """
                     SELECT gr_name, name, id
                     FROM(SELECT name, id, gr_name, count(genre)
                     		FROM (SELECT customer.first_name as name,
                     					 customer.customer_id as id,
-                    					 track.genre_id as genre,\s
+                    					 track.genre_id as genre,
                     					 genre.name as gr_name
                     				FROM customer
-                    				JOIN invoice\s
+                    				JOIN invoice
                     					ON customer.customer_id = invoice.customer_id
                     				JOIN invoice_line
                     					ON invoice.invoice_id = invoice_line.invoice_line_id
@@ -297,10 +322,10 @@ public class CustomerImpl implements CustomerRepository{
                     				FROM(SELECT gr_name, count(genre)
                     				FROM (SELECT customer.first_name as name,
                     							 customer.customer_id as id,
-                    							 track.genre_id as genre,\s
+                    							 track.genre_id as genre,
                     							 genre.name as gr_name
                     						FROM customer
-                    						JOIN invoice\s
+                    						JOIN invoice
                     							ON customer.customer_id = invoice.customer_id
                     						JOIN invoice_line
                     							ON invoice.invoice_id = invoice_line.invoice_line_id
@@ -309,7 +334,7 @@ public class CustomerImpl implements CustomerRepository{
                     						JOIN genre
                     							ON track.genre_id = genre.genre_id)AS customers_genre
                     				WHERE id=?
-                    				GROUP BY gr_name)AS something))""";
+                    				GROUP BY gr_name)AS something))"""; //passing the sql query into a string value
         CustomerGenre customerGenre = null;  //creating a new customerGenre reference
         try(Connection conn = DriverManager.getConnection(url,username,password)){
             PreparedStatement statement = conn.prepareStatement(sql);   //creating a statement for the query
