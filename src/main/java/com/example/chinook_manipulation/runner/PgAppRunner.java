@@ -17,7 +17,6 @@ public class PgAppRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        customer.test();
         //Customer requirements: requirement 1
         System.out.println("Customer requirements: requirement 1");
         System.out.println(customer.readAll());

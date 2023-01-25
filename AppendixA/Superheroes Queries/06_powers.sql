@@ -1,4 +1,10 @@
-INSERT INTO superpower (superpower_name,superpower_description) 
+-- Inserting sample Superpower entries to the Superpower table.
+-- Also inserting the respective hero_id, power_id to the
+-- superhero_power table, so each Superhero is matched to one
+-- ore more Superpowers, and each Superpower is attributed to
+-- one or more Superheroes.
+
+INSERT INTO superpower (superpower_name,superpower_description)
 VALUES ('flying','Can fly himself and even carry his allies to the sky');
 
 INSERT INTO superpower (superpower_name,superpower_description) 
