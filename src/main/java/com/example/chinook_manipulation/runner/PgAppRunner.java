@@ -2,11 +2,13 @@ package com.example.chinook_manipulation.runner;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-
 import org.springframework.stereotype.Component;
 import com.example.chinook_manipulation.repositories.CustomerRepositoryImpl;
 import com.example.chinook_manipulation.repositories.CustomerRepository;
 
+/* Class that makes use of ApplicationRunner Interface to "run"
+all CustomerRepositoryImpl methods that are specified in the
+overridden run() method. */
 @Component
 public class PgAppRunner implements ApplicationRunner {
 

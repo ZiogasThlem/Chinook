@@ -66,7 +66,7 @@ public class CustomerRepositoryImpl implements CustomerRepository{
     }
 
     @Override
-    public Customer readByID(Integer integer) {
+    public Customer readByID(int integer) {
 
         String sql = "SELECT * FROM customer WHERE customer_id = ?"; //passing the sql query into a string value
         Customer customer = null; //creating a new customer reference
