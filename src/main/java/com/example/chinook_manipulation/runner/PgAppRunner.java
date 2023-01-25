@@ -5,7 +5,9 @@ import com.example.chinook_manipulation.repositories.CustomerRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-
+/* Class that makes use of ApplicationRunner Interface to "run"
+all CustomerRepositoryImpl methods that are specified in the
+overridden run() method. */
 @Component
 public class PgAppRunner implements CommandLineRunner {
 
@@ -28,7 +30,7 @@ public class PgAppRunner implements CommandLineRunner {
         System.out.println(customer.readByName("Daan"));
         //Customer requirements: requirement 4
         System.out.println("Customer requirements: requirement 4");
-        System.out.println(customer.page(5,3));
+        System.out.println(customer.pageOfCustomers(5,3));
         //Customer requirements: requirement 5
         System.out.println("Customer requirements: requirement 5");
         Customer custom = new Customer(45,"christos","Giannikis","Greece","53321","6970234387","xrist.ginas@hotmail.com");

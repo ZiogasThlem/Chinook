@@ -120,7 +120,7 @@ public class CustomerRepositoryImpl implements CustomerRepository{
     }
 
     @Override
-    public List<Customer> page(int limit, int offset) {
+    public List<Customer> pageOfCustomers(int limit, int offset) {
 
         /*This sql query returns the field's customer_id, country, postal_code, first_name,
          *last_name, phone and email from table customer.
